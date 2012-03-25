@@ -21,6 +21,6 @@ requires:
   Number::Phone: 2
   Number::Phone::Country: 1.7
   Number::Phone::NANP: 1.3
-  String::Validator::Common: 0.93
+  String::Validator::Common: 0.96
   Test::More: 0
-version: 0.10
+version: 0.96

@@ -14,7 +14,7 @@ WriteMakefile(
     PL_FILES            => {},
     PREREQ_PM => {
         'Test::More' => 0,
-	'String::Validator::Common' => 0.93,
+	'String::Validator::Common' => 0.96,
 	'Number::Phone' => 2.0,
 	'Number::Phone::Country' => 1.7,
 	'Number::Phone::NANP' => 1.3,

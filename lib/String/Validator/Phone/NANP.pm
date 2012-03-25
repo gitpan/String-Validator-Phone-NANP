@@ -12,11 +12,11 @@ String::Validator::Phone::NANP - Check a Phone Number (North American Numbering 
 
 =head1 VERSION
 
-Version 0.10
+Version 0.96
 
 =cut
 
-our $VERSION = '0.10';
+our $VERSION = '0.96';
 
 sub new {
     my $class = shift ;
@@ -62,10 +62,9 @@ sub _must_be10 {
 sub _Init  {
     my $self = shift ;
 	$self->{ error } = 0 ;
-	for ( qw / string original international errstring /) {
+	for ( qw / string original international errstring areacode exchange local /) {
 		$self->{ $_ } = '' ; }
     } ;
-
 
 sub Check {
     my ( $self, $string1, $string2 ) = @_ ;
@@ -76,6 +75,8 @@ sub Check {
         $self->{ string } = '' ; return $self->{ error } }
     $self->{ original } = $string1 ;
     #Number::Phone requires a leading 1.;
+    ( $self->{ areacode }, $self->{ exchange }, $self->{ local } ) =
+            split /\-/, $self->{ string };
     $self->{ international } = '1-' . $self->{ string } ;
     my $Phone = Number::Phone->new( $self->{ international } ) ;
     unless ( $Phone ) {
@@ -93,12 +94,17 @@ sub Original { my $self = shift ; return $self->{ original } ; } ;
 
 sub Areacode {
 	my $self = shift ;
-	return substr( $self->{ string }, 0, 3 ) ;
+	return ( $self->{ areacode } ) ;
 	}
+	
+sub Exchange {
+	my $self = shift ;
+	return ( $self->{ exchange } ) ;
+	}	
 
 sub Local {
 	my $self = shift ;
-	return substr( $self->{ string }, 4 ) ;
+	return ( $self->{ local } ) ;
 	}
 
 sub International { my $self = shift ; return $self->{ international } }
@@ -106,8 +112,9 @@ sub International { my $self = shift ; return $self->{ international } }
 sub Parens {
 	my $self = shift ;
 	my $area = $self->Areacode() ;
+	my $exchange = $self->Exchange() ;
 	my $local = $self->Local() ;
-	return "($area) $local" ;
+	return "($area) $exchange-$local" ;
 	}
 
 sub Number_Phone {
@@ -134,7 +141,7 @@ String::Validator::Common for information on the base String::Validator Class.
 
  alphanum    (OFF) : Allow Alphanumeric formats. 
 
-=head2 Original, String, International, Parens, Local
+=head2 Original, String, International, Areacode, Parens, Local
 
 Returns:
 
@@ -146,9 +153,9 @@ States).
 
 International: Prepends 1- in front of the string.
 
-Parens: Formats the number (AREA) EXCHANGE-NUMBER.
+Areacode, Exchange, Local: Returns each of the 3 components of a number
 
-Local: Provides the EXCHANGE-NUMBER portion. 
+Parens: Formats the number (AREA) EXCHANGE-LOCAL.
 
 =head2 Number_Phone
 
@@ -174,9 +181,7 @@ number evaluated was not valid it returns 0.
 =head1 ToDo
 
 The major TO DO items are to provide String::Validator::Phone modules for other numbering 
-schemes and to fully encapsulate Number::Phone
-to fix the the call to (or replace) the Email::Valid mx method, return an Email::Address object and to use it to create methods for returning information
-from an extended mail string like: Jane Brown <jane.brown@domain.com>.
+schemes and to fully encapsulate Number::Phone.
 
 =head1 AUTHOR
 
